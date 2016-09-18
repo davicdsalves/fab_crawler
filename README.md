@@ -1,1 +1,2 @@
 # fab_crawler
+this project uses [py-parsehub](https://github.com/hronecviktor/py-parsehub)  and [wget](https://bitbucket.org/techtonik/python-wget/src)
