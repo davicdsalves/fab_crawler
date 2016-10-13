@@ -17,7 +17,7 @@ def getProjectData():
     for i in range(0, 4):
         flightYear = (currentYear - i)
         filename = 'voo_%d.json' % flightYear
-        print(filename)
+        print('\nparsing %s' % filename)
         if not os.path.isfile(filename):
             projectData = projects[i].last_ready_run.get_data()
             with open(filename, 'w') as file:
@@ -41,9 +41,11 @@ def parseProjectData(filename, flightYear):
 def getMonthData(flightYear, monthName, monthDays):
     monthFolder = '%s/%s' % (flightYear, monthName)
     createDir(monthFolder)
-    print('\nparsing %s(%s)' % (monthName, flightYear))
+    print('parsing %s(%s)' % (monthName, flightYear))
+    days = []
 
     for day in monthDays:
+        days.append(day["name"])
         pdfUrl = day["url"]
         pdfUrlSplit = pdfUrl.split('/')
         pdfName = pdfUrlSplit[len(pdfUrlSplit) - 1]
@@ -55,9 +57,10 @@ def getMonthData(flightYear, monthName, monthDays):
                 wget.download(pdfUrl, monthFolder)
             except HTTPError as e:
                 if e.code == 404:
-                    print('\nerror downloading %s, sleep for 3 seconds.' % pdfUrl)
+                    print('error downloading %s, sleep for 3 seconds.' % pdfUrl)
                     time.sleep(3)
                     wget.download(pdfUrl, monthFolder)
+    print('month[%s], days[%s] done.' % (monthName, ', '.join(days)))
 
 
 def createDir(name):
