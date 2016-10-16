@@ -19,7 +19,9 @@ def getProjectData():
         filename = 'voo_%d.json' % flightYear
         print('\nparsing %s' % filename)
         if not os.path.isfile(filename):
-            projectData = projects[i].last_ready_run.get_data()
+            projectLastRun = projects[i].last_run
+            print('retrieve project run {0}'.format(projectLastRun))
+            projectData = projectLastRun.get_data()
             with open(filename, 'w') as file:
                 json.dump(projectData, file)
 
