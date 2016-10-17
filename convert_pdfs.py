@@ -1,4 +1,4 @@
-import glob
+from glob import glob
 import os
 from subprocess import Popen, PIPE
 
@@ -7,7 +7,7 @@ def getYearFolder():
     years = ['2016', '2015', '2014', '2013']
     for year in years:
         yearDir = '%s/%s/**/*.pdf' % (os.getcwd(), year)
-        convertPdfToHtml(glob.glob(yearDir))
+        convertPdfToHtml(glob(yearDir))
 
 
 def convertPdfToHtml(pdfs):
