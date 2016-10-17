@@ -15,9 +15,9 @@ def convertPdfToHtml(pdfs):
         pdfPathSplit = pdfPath.split('/')
         pdfName = pdfPathSplit[len(pdfPathSplit) - 1]
         pdfPathFolder = pdfPath[0:pdfPath.rfind('/')]
-        outputFile = "{0}/{1}.html".format(pdfPathFolder, pdfName)
+        outputFile = "{0}/{1}".format(pdfPathFolder, pdfName)
         print('converting %s to html' % pdfName)
-        command = ['pdftohtml', '-nomerge', '-s', pdfPath, outputFile]
+        command = ['pdftohtml', '-nomerge', '-xml', '-s', '-noframes', pdfPath, outputFile]
         with Popen(command, stdout=PIPE, bufsize=1, universal_newlines=True) as p:
             for line in p.stdout:
                 print(line, end='')
