@@ -2,6 +2,7 @@ import xml.etree.cElementTree as eTree
 from glob import glob
 import os
 from persist_data import save_line_to_db, close_db
+from date_parser import is_merged_date, parse_date
 
 
 def parse_xml(xmls):
@@ -15,10 +16,6 @@ def parse_xml(xmls):
 
 def is_invalid_line(tag_text):
     return len(tag_text) == 0 or "Página" in tag_text
-
-
-def is_date(text):  # como data tem 2 formatos, com e sem '-' mais facil so procurar por / e :
-    return text.count('/') == 2 and text.count(':') == 1
 
 
 # alguns xmls tem a data e origem/destino na mesma tag.
@@ -43,13 +40,12 @@ def parse_xml_lines(xml_data, xml):
 
             line_counter += 1
 
-            if is_text_merged(all_text):
-                flight.append(all_text[:18])
-                flight.append(all_text[18:])
+            if is_merged_date(all_text):
+                splited_line = parse_date(all_text)
+                flight.append(splited_line[0])
+                flight.append(splited_line[1])
                 line_counter += 1
             elif line_counter > 1 and is_double_line(previous_line_tag, textTag):
-                print(flight)
-                print(line_counter)
                 double_line_text = flight[line_counter - 2] + all_text
                 flight[line_counter - 2] = double_line_text
                 line_counter -= 1
@@ -67,8 +63,8 @@ def parse_xml_lines(xml_data, xml):
 # 2013 tem formato diferente, e AERONAVE usa font[1]
 # olhar /2014/Janeiro/20140122_174018.pdf.xml
 def get_year_folder():
-    # years = ['2016', '2015', '2014']
-    years = ['2014']
+    years = ['2016', '2015', '2014']
+    # years = ['2014']
     for year in years:
         year_dir = '%s/%s/**/*.pdf.xml' % (os.getcwd(), year)
         parse_xml(glob(year_dir))
