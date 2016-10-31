@@ -64,7 +64,6 @@ def parse_xml_lines(xml_data, xml):
 # olhar /2014/Janeiro/20140122_174018.pdf.xml
 def get_year_folder():
     years = ['2016', '2015', '2014']
-    # years = ['2014']
     for year in years:
         year_dir = '%s/%s/**/*.pdf.xml' % (os.getcwd(), year)
         parse_xml(glob(year_dir))
