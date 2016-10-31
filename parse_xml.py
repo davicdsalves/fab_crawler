@@ -1,84 +1,88 @@
 import xml.etree.cElementTree as eTree
 from glob import glob
 import os
-from persist_data import saveLineToDB, closeDb
+from persist_data import save_line_to_db, close_db
 
 
-def parseXml(xmls):
+def parse_xml(xmls):
     for xml in xmls:
         tree = eTree.parse(xml)
         root = tree.getroot()
-        xmlData = root.findall("*/text[@font='1']")
+        xml_data = root.findall("*/text[@font='1']")
         print('parsing xml[{0}]'.format(xml))
-        parseXmlLines(xmlData, xml)
+        parse_xml_lines(xml_data, xml)
 
 
-def isInvalidLine(tagText):
-    return len(tagText) == 0 or "Página" in tagText
+def is_invalid_line(tag_text):
+    return len(tag_text) == 0 or "Página" in tag_text
+
+
+def is_date(text):  # como data tem 2 formatos, com e sem '-' mais facil so procurar por / e :
+    return text.count('/') == 2 and text.count(':') == 1
 
 
 # alguns xmls tem a data e origem/destino na mesma tag.
-def isTextMerged(allText):
-    dateLength = 18
-    return len(allText) > dateLength and allText.count('/') > 1
+def is_text_merged(all_text):
+    date_length = 18
+    return len(all_text) > date_length and all_text.count('/') == 2
 
 
-def isDoubleLine(previousLineTag: eTree.Element, textTag: eTree.Element):
-    return previousLineTag.attrib['left'] == textTag.attrib['left']
+def is_double_line(previous_line_tag: eTree.Element, text_tag: eTree.Element):
+    return previous_line_tag.attrib['left'] == text_tag.attrib['left']
 
 
-def parseXmlLines(xmlData, xml):
+def parse_xml_lines(xml_data, xml):
     flight = []
-    previousLineTag = xmlData[0]
-    lineCounter = 0
-    for textTag in xmlData:
+    previous_line_tag = xml_data[0]
+    line_counter = 0
+    for textTag in xml_data:
         if textTag.text is not None:
-            allText = "".join(textTag.itertext()).strip()
-            if isInvalidLine(allText):
+            all_text = "".join(textTag.itertext()).strip()
+            if is_invalid_line(all_text):
                 continue
 
-            lineCounter += 1
+            line_counter += 1
 
-            if isTextMerged(allText):
-                flight.append(allText[:18])
-                flight.append(allText[18:])
-                lineCounter += 1
-            elif lineCounter > 1 and isDoubleLine(previousLineTag, textTag):
+            if is_text_merged(all_text):
+                flight.append(all_text[:18])
+                flight.append(all_text[18:])
+                line_counter += 1
+            elif line_counter > 1 and is_double_line(previous_line_tag, textTag):
                 print(flight)
-                print(lineCounter)
-                doubleLineText = flight[lineCounter - 2] + allText
-                flight[lineCounter - 2] = doubleLineText
-                lineCounter -= 1
+                print(line_counter)
+                double_line_text = flight[line_counter - 2] + all_text
+                flight[line_counter - 2] = double_line_text
+                line_counter -= 1
             else:
-                flight.append(allText)
+                flight.append(all_text)
 
-            if lineCounter == 7:  # 7 informacoes sao uma linha
-                lineCounter = 0
-                saveLineToDB(flight, xml)
+            if line_counter == 7:  # 7 informacoes sao uma linha
+                line_counter = 0
+                save_line_to_db(flight, xml)
                 del flight[:]
 
-            previousLineTag = textTag
+            previous_line_tag = textTag
 
 
 # 2013 tem formato diferente, e AERONAVE usa font[1]
 # olhar /2014/Janeiro/20140122_174018.pdf.xml
-def getYearFolder():
+def get_year_folder():
     # years = ['2016', '2015', '2014']
     years = ['2014']
     for year in years:
-        yearDir = '%s/%s/**/*.pdf.xml' % (os.getcwd(), year)
-        parseXml(glob(yearDir))
-        closeDb()
+        year_dir = '%s/%s/**/*.pdf.xml' % (os.getcwd(), year)
+        parse_xml(glob(year_dir))
+        close_db()
 
 
-def checkForError(root, xml):  # ver a necessidade
-    counterForShareFlight = 0
-    if counterForShareFlight == 0:
-        zeroFont = root.findall("*/text[@font='0']")
-        for textTag in zeroFont:
-            allText = "".join(textTag.itertext())
-            if "AERONAVE" in allText:
+def check_for_error(root, xml):  # ver a necessidade
+    counter_for_share_flight = 0
+    if counter_for_share_flight == 0:
+        zero_font = root.findall("*/text[@font='0']")
+        for textTag in zero_font:
+            all_text = "".join(textTag.itertext())
+            if "AERONAVE" in all_text:
                 print("error? [ {0} ]".format(xml))
 
 
-getYearFolder()
+get_year_folder()

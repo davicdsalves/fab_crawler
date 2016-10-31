@@ -3,14 +3,14 @@ import os
 from subprocess import Popen, PIPE
 
 
-def getYearFolder():
+def get_year_folder():
     years = ['2016', '2015', '2014', '2013']
     for year in years:
         yearDir = '%s/%s/**/*.pdf' % (os.getcwd(), year)
-        convertPdfToHtml(glob(yearDir))
+        convert_pdf_to_html(glob(yearDir))
 
 
-def convertPdfToHtml(pdfs):
+def convert_pdf_to_html(pdfs):
     for pdfPath in pdfs:
         pdfPathSplit = pdfPath.split('/')
         pdfName = pdfPathSplit[len(pdfPathSplit) - 1]
@@ -23,4 +23,4 @@ def convertPdfToHtml(pdfs):
                 print(line, end='')
 
 
-getYearFolder()
+get_year_folder()

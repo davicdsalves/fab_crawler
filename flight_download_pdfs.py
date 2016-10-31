@@ -9,65 +9,65 @@ from ph2 import ParseHub
 ph = ParseHub(os.environ.get('PARSEHUB_KEY'))
 
 
-def getProjectData():
-    currentYear = datetime.now().year
+def get_project_data():
+    current_year = datetime.now().year
     projects = ph.projects
     print(projects)
 
     for i in range(0, 4):
-        flightYear = (currentYear - i)
-        filename = 'voo_%d.json' % flightYear
+        flight_year = (current_year - i)
+        filename = 'voo_%d.json' % flight_year
         print('\nparsing %s' % filename)
         if not os.path.isfile(filename):
-            projectLastRun = projects[i].last_run
-            print('retrieve project run {0}'.format(projectLastRun))
-            projectData = projectLastRun.get_data()
+            project_last_run = projects[i].last_run
+            print('retrieve project run {0}'.format(project_last_run))
+            project_data = project_last_run.get_data()
             with open(filename, 'w') as file:
-                json.dump(projectData, file)
+                json.dump(project_data, file)
 
-        parseProjectData(filename, flightYear)
+        parse_project_data(filename, flight_year)
     print('done downloading pdfs')
 
 
-def parseProjectData(filename, flightYear):
-    with open(filename) as projectData:
-        data = json.load(projectData)
-    createDir(flightYear)
+def parse_project_data(filename, flight_year):
+    with open(filename) as project_data:
+        data = json.load(project_data)
+    create_dir(flight_year)
 
     months = data["month"]
     for month in months:
         if 'days' in month:
-            getMonthData(flightYear, month["name"], month["days"])
+            get_month_data(flight_year, month["name"], month["days"])
 
 
-def getMonthData(flightYear, monthName, monthDays):
-    monthFolder = '%s/%s' % (flightYear, monthName)
-    createDir(monthFolder)
-    print('parsing %s(%s)' % (monthName, flightYear))
+def get_month_data(flight_year, month_name, month_days):
+    month_folder = '%s/%s' % (flight_year, month_name)
+    create_dir(month_folder)
+    print('parsing %s(%s)' % (month_name, flight_year))
     days = []
 
-    for day in monthDays:
+    for day in month_days:
         days.append(day["name"])
-        pdfUrl = day["url"]
-        pdfUrlSplit = pdfUrl.split('/')
-        pdfName = pdfUrlSplit[len(pdfUrlSplit) - 1]
-        localPdfFile = '%s/%s' % (monthFolder, pdfName)
+        pdf_url = day["url"]
+        pdf_url_split = pdf_url.split('/')
+        pdf_name = pdf_url_split[len(pdf_url_split) - 1]
+        local_pdf_file = '%s/%s' % (month_folder, pdf_name)
 
-        if not os.path.isfile(localPdfFile):
-            print('\ndownloading %s-%s[%s]' % (monthName, day["name"], pdfUrl))
+        if not os.path.isfile(local_pdf_file):
+            print('\ndownloading %s-%s[%s]' % (month_name, day["name"], pdf_url))
             try:
-                wget.download(pdfUrl, monthFolder)
+                wget.download(pdf_url, month_folder)
             except HTTPError as e:
                 if e.code == 404:
-                    print('error downloading %s, sleep for 3 seconds.' % pdfUrl)
+                    print('error downloading %s, sleep for 3 seconds. will retry 1 more time.' % pdf_url)
                     time.sleep(3)
-                    wget.download(pdfUrl, monthFolder)
-    print('month[%s], days[%s] done.' % (monthName, ', '.join(days)))
+                    wget.download(pdf_url, month_folder)
+    print('month[%s], days[%s] done.' % (month_name, ', '.join(days)))
 
 
-def createDir(name):
+def create_dir(name):
     if not os.path.exists(str(name)):
         os.makedirs(str(name))
 
 
-getProjectData()
+get_project_data()
