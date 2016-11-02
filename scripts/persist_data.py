@@ -1,6 +1,6 @@
 from peewee import *
-from date_parser import parse_date_time
 
+from scripts.date_parser import parse_date_time
 
 db = MySQLDatabase()
 

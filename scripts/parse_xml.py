@@ -1,8 +1,10 @@
+import os
 import xml.etree.cElementTree as eTree
 from glob import glob
-import os
+
 from persist_data import save_line_to_db, close_db
-from date_parser import is_merged_date, parse_date
+
+from scripts.date_parser import is_merged_date, parse_date
 
 
 def parse_xml(xmls):

@@ -1,10 +1,12 @@
 import json
 import os
-from urllib.error import HTTPError
 import time
-import wget
 from datetime import datetime
-from ph2 import ParseHub
+from urllib.error import HTTPError
+
+import wget
+
+from scripts.ph2 import ParseHub
 
 ph = ParseHub(os.environ.get('PARSEHUB_KEY'))
 

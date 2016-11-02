@@ -100,5 +100,5 @@ ENV/
 voo_*.json
 
 #frameworks
-wget.py
-ph2.py
+scripts/wget.py
+scripts/ph2.py
