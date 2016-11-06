@@ -57,6 +57,6 @@ def close_db():
 
 def bulk_insert():
     print("saving %d records to database" % len(flights_to_save))
-    with db.atomic():
+    with db.atomic():  # entender pq Model.insert_many nao funciona
         for data_dict in flights_to_save:
             data_dict.save()
