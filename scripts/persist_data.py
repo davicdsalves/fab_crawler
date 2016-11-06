@@ -1,11 +1,11 @@
 from peewee import *
 
-from scripts.date_parser import parse_date_time
+from date_parser import parse_date_time
 
 db = MySQLDatabase()
 
 
-class Flight(Model):
+class RawData(Model):
     autoridade = CharField()
     origem = CharField()
     data_decolagem = DateTimeField()
@@ -29,13 +29,13 @@ def save_line_to_db(flight_line, xml):
         motivo = flight_line[6]
         previsao = flight_line[5]
 
-    flight = Flight(autoridade=flight_line[0],
-                    origem=flight_line[1],
-                    data_decolagem=parse_date_time(flight_line[2]),
-                    destino=flight_line[3],
-                    data_pouso=parse_date_time(flight_line[4]),
-                    motivo=motivo,
-                    previsao_passageiros=previsao)
+    flight = RawData(autoridade=flight_line[0],
+                     origem=flight_line[1],
+                     data_decolagem=parse_date_time(flight_line[2]),
+                     destino=flight_line[3],
+                     data_pouso=parse_date_time(flight_line[4]),
+                     motivo=motivo,
+                     previsao_passageiros=previsao)
     flight.save()
 
 
