@@ -1,4 +1,4 @@
-CREATE TABLE flight (
+CREATE TABLE raw_data (
   ID int NOT NULL AUTO_INCREMENT,
   autoridade           VARCHAR(255) NOT NULL,
   origem               VARCHAR(255) NOT NULL,

@@ -10,7 +10,7 @@ def parse_date_time(date):  # dd/mm/yyyy - HH:mm
 
 def is_merged_date(text):
     if not is_date(text):
-        return text.count('/') == 2 and text.count(':') == 1
+        return text.count('/') >= 2 and text.count(':') >= 1
     return False
 
 
@@ -30,6 +30,8 @@ def date_at_beginning(text):
 # 1) normal: 12/05/2014 - 15:00
 # 2) 12/05/2014 - 15:00 Brasília
 # 3) Brasília 12/05/2014 - 15:00
+# 4) Brasília 12/05/2014 - 15:00 Brasília
+# 5) 12/05/2014 - 15:00 Brasília 12/05/2014 - 18:00
 # metodo chamado caso encontre um texto que contenha data e Cidade
 def parse_date(text: str):
     splited = []

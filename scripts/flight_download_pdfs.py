@@ -6,7 +6,7 @@ from urllib.error import HTTPError
 
 import wget
 
-from scripts.ph2 import ParseHub
+from ph2 import ParseHub
 
 ph = ParseHub(os.environ.get('PARSEHUB_KEY'))
 

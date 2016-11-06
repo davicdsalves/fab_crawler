@@ -1,10 +1,8 @@
-import os
 import xml.etree.cElementTree as eTree
 from glob import glob
-
+import os
 from persist_data import save_line_to_db, close_db
-
-from scripts.date_parser import is_merged_date, parse_date
+from date_parser import is_merged_date, parse_date
 
 
 def parse_xml(xmls):
@@ -12,12 +10,13 @@ def parse_xml(xmls):
         tree = eTree.parse(xml)
         root = tree.getroot()
         xml_data = root.findall("*/text[@font='1']")
-        print('parsing xml[{0}]'.format(xml))
-        parse_xml_lines(xml_data, xml)
+        if xml is not "20130716_174803.pdf.xml":
+            print('parsing xml[{0}]'.format(xml))
+            parse_xml_lines(xml_data, xml)
 
 
 def is_invalid_line(tag_text):
-    return len(tag_text) == 0 or "Página" in tag_text
+    return len(tag_text) == 0 or "Página" in tag_text or "AERONAVE COMPARTILHADA" in tag_text
 
 
 # alguns xmls tem a data e origem/destino na mesma tag.
@@ -45,12 +44,20 @@ def parse_xml_lines(xml_data, xml):
             if is_merged_date(all_text):
                 splited_line = parse_date(all_text)
                 flight.append(splited_line[0])
-                flight.append(splited_line[1])
                 line_counter += 1
+                if is_merged_date(splited_line[1]):  # 2013 xml tem linhas com 3 conteudos (recursao?)
+                    splited_again = parse_date(splited_line[1])
+                    flight.append(splited_again[0])
+                    flight.append(splited_again[1])
+                    line_counter += 1
+                else:
+                    flight.append(splited_line[1])
+
             elif line_counter > 1 and is_double_line(previous_line_tag, textTag):
                 double_line_text = flight[line_counter - 2] + all_text
                 flight[line_counter - 2] = double_line_text
                 line_counter -= 1
+
             else:
                 flight.append(all_text)
 
@@ -65,7 +72,7 @@ def parse_xml_lines(xml_data, xml):
 # 2013 tem formato diferente, e AERONAVE usa font[1]
 # olhar /2014/Janeiro/20140122_174018.pdf.xml
 def get_year_folder():
-    years = ['2016', '2015', '2014']
+    years = ['2016', '2015', '2014', '2013']
     for year in years:
         year_dir = '%s/%s/**/*.pdf.xml' % (os.getcwd(), year)
         parse_xml(glob(year_dir))
