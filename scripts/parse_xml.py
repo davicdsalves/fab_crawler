@@ -10,7 +10,7 @@ def parse_xml(xmls):
         tree = eTree.parse(xml)
         root = tree.getroot()
         xml_data = root.findall("*/text[@font='1']")
-        if xml is not "20130716_174803.pdf.xml":
+        if "20130716_174803.pdf.xml" not in xml: #esse xml tem formato incorreto, descartando
             print('parsing xml[{0}]'.format(xml))
             parse_xml_lines(xml_data, xml)
 

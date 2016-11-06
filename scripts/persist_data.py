@@ -16,6 +16,7 @@ class RawData(Model):
 
     class Meta:
         database = db
+        db_table = "raw_data"
 
 
 def save_line_to_db(flight_line, xml):
