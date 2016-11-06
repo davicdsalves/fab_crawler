@@ -3,6 +3,7 @@ from peewee import *
 from date_parser import parse_date_time
 
 db = MySQLDatabase()
+flights_to_save = []
 
 
 class RawData(Model):
@@ -19,7 +20,7 @@ class RawData(Model):
         db_table = "raw_data"
 
 
-def save_line_to_db(flight_line, xml):
+def create_db_model(flight_line, xml):
     # print('obj: {0}, xml: {1}'.format(flight_line, xml))
     # print('{0}, {1}, {2}, {3}, {4}, {5}, {6}'.format(flight_line[0], flight_line[1], flight_line[2], flight_line[3], flight_line[4], flight_line[5], flight_line[6]))
 
@@ -37,7 +38,7 @@ def save_line_to_db(flight_line, xml):
                      data_pouso=parse_date_time(flight_line[4]),
                      motivo=motivo,
                      previsao_passageiros=previsao)
-    flight.save()
+    flights_to_save.append(flight)
 
 
 def is_int(text):
@@ -52,3 +53,10 @@ def is_int(text):
 
 def close_db():
     pass
+
+
+def bulk_insert():
+    print("saving %d records to database" % len(flights_to_save))
+    with db.atomic():
+        for data_dict in flights_to_save:
+            data_dict.save()

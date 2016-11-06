@@ -1,7 +1,7 @@
 import xml.etree.cElementTree as eTree
 from glob import glob
 import os
-from persist_data import save_line_to_db, close_db
+from persist_data import create_db_model, bulk_insert
 from date_parser import is_merged_date, parse_date
 
 
@@ -10,7 +10,7 @@ def parse_xml(xmls):
         tree = eTree.parse(xml)
         root = tree.getroot()
         xml_data = root.findall("*/text[@font='1']")
-        if "20130716_174803.pdf.xml" not in xml: #esse xml tem formato incorreto, descartando
+        if "20130716_174803.pdf.xml" not in xml:  # esse xml tem formato incorreto, descartando
             print('parsing xml[{0}]'.format(xml))
             parse_xml_lines(xml_data, xml)
 
@@ -63,7 +63,7 @@ def parse_xml_lines(xml_data, xml):
 
             if line_counter == 7:  # 7 informacoes sao uma linha
                 line_counter = 0
-                save_line_to_db(flight, xml)
+                create_db_model(flight, xml)
                 del flight[:]
 
             previous_line_tag = textTag
@@ -76,7 +76,7 @@ def get_year_folder():
     for year in years:
         year_dir = '%s/%s/**/*.pdf.xml' % (os.getcwd(), year)
         parse_xml(glob(year_dir))
-        close_db()
+    bulk_insert()
 
 
 def check_for_error(root, xml):  # ver a necessidade
