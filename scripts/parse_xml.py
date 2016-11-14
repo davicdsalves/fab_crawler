@@ -54,7 +54,7 @@ def parse_xml_lines(xml_data, xml):
                     flight.append(splited_line[1])
 
             elif line_counter > 1 and is_double_line(previous_line_tag, textTag):
-                double_line_text = flight[line_counter - 2] + all_text
+                double_line_text = flight[line_counter - 2] + " " + all_text
                 flight[line_counter - 2] = double_line_text
                 line_counter -= 1
 
