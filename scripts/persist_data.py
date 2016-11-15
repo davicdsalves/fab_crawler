@@ -31,7 +31,7 @@ def create_db_model(flight_line, xml):
         motivo = flight_line[6]
         previsao = flight_line[5]
 
-    flight = RawData(autoridade=flight_line[0],
+    flight = RawData(autoridade=" ".join(flight_line[0].split()),
                      origem=flight_line[1],
                      data_decolagem=parse_date_time(flight_line[2]),
                      destino=flight_line[3],
