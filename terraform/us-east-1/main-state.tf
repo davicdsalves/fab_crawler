@@ -3,6 +3,8 @@ variable "bucket" {}
 variable "tfstate" {}
 variable "vpc_id" {}
 variable "ssh_release_ip" {}
+variable "instances_key_name" {}
+variable "subnet_id" {}
 
 terraform {
   required_version = ">= 0.10.2"
@@ -28,4 +30,11 @@ module "securitygroup" {
   source = "./modules/securitygroup"
   vpc_id = "${var.vpc_id}"
   ssh_release_ip = "${var.ssh_release_ip}"
+}
+
+module "app_instances" {
+  source = "./modules/instances"
+  key_name = "${var.instances_key_name}"
+  sg_admin_id = "${module.securitygroup.sg_pdf_worker}"
+  subnet_id = "${var.subnet_id}"
 }
