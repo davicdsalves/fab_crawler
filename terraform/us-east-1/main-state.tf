@@ -1,7 +1,8 @@
 variable "region" {}
 variable "bucket" {}
 variable "tfstate" {}
-variable "project-name" {}
+variable "vpc_id" {}
+variable "ssh_release_ip" {}
 
 terraform {
   required_version = ">= 0.10.2"
@@ -21,4 +22,10 @@ data "terraform_remote_state" "main-state" {
     region = "${var.region}"
     profile = "default"
   }
+}
+
+module "securitygroup" {
+  source = "./modules/securitygroup"
+  vpc_id = "${var.vpc_id}"
+  ssh_release_ip = "${var.ssh_release_ip}"
 }
